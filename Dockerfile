@@ -27,6 +27,9 @@ RUN git clone --depth 1 ${KLIPPER_REPO} klipper \
     && virtualenv -p python3 /build/python-env \
     && /build/python-env/bin/pip install --no-cache-dir -r /build/klipper/scripts/klippy-requirements.txt
 
+#### override the timer check for non-realtime environments like simulavr
+RUN sed -i 's/TRSYNC_TIMEOUT = [0-9.]*/TRSYNC_TIMEOUT = 5.0/' /build/klipper/klippy/mcu.py
+
 #### Build Firmware
 COPY config/simulavr.config /build/klipper/.config
     # Build the firmware
