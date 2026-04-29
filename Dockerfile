@@ -37,12 +37,10 @@ RUN cd /home/printer/klipper \
     && rm -f .config \
     && make clean
 
-#### Moonraker
-RUN git clone --depth 1 https://github.com/Arksine/moonraker \
-    && /home/printer/python-env/bin/pip install --no-cache-dir -r /home/printer/moonraker/scripts/moonraker-requirements.txt
-
-#### Moonraker Timelapse
-RUN git clone https://github.com/mainsail-crew/moonraker-timelapse
+#### OctoPrint
+ARG OCTOPRINT_PIP_SPEC=OctoPrint
+ENV OCTOPRINT_PIP_SPEC=${OCTOPRINT_PIP_SPEC}
+RUN /home/printer/python-env/bin/pip install --no-cache-dir "${OCTOPRINT_PIP_SPEC}"
 
 #### MJPG-Streamer
 RUN git clone --depth 1 https://github.com/jacksonliam/mjpg-streamer \
@@ -71,10 +69,9 @@ RUN apt-get update && apt-get install -y \
     git \
     supervisor \
     sudo \
-    ### moonraker \
+    ### octoprint runtime dependencies \
     libopenjp2-7 \
-    libsodium-dev \
-    zlib1g-dev \
+    zlib1g \
     libjpeg-dev \
     curl \
     iproute2 \
@@ -105,8 +102,6 @@ WORKDIR /home/printer
 # Copy our prebuilt applications from the builder stage
 COPY --from=builder --chown=printer:printer /home/printer/python-env ./python-env
 COPY --from=builder --chown=printer:printer /home/printer/klipper/ ./klipper/
-COPY --from=builder --chown=printer:printer /home/printer/moonraker ./moonraker
-COPY --from=builder --chown=printer:printer /home/printer/moonraker-timelapse ./moonraker-timelapse
 COPY --from=builder --chown=printer:printer /home/printer/klipper_out/ ./klipper/out/
 COPY --from=builder --chown=printer:printer /home/printer/mjpg-streamer/mjpg-streamer-experimental ./mjpg-streamer
 COPY --from=builder --chown=printer:printer /home/printer/printer_simulator/ ./printer_simulator/

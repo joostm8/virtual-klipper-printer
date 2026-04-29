@@ -1,22 +1,31 @@
 services:
   printer:
-    image: ghcr.io/mainsail-crew/virtual-klipper-printer:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        KLIPPER_REPO: ${KLIPPER_REPO:-https://github.com/Klipper3d/klipper.git}
+    image: virtual-klipper-printer-octoprint:local
     container_name: printer
     volumes:
       - ./printer_data:/home/printer/printer_data:delegated,Z
+      - ./printer_data/octoprint:/octoprint
     ports:
-      - "7125:7125"
+      - "5000:5000"
       - "8110:8080"
     tmpfs:
       - /tmp:noexec
       - /home/printer/printer_data/comms:noexec
-    
-  mainsail:
-    image: ghcr.io/mainsail-crew/mainsail:latest
-    restart: always
+
+  mosquitto:
+    image: joostm8/mosquitto-anonymous-allowed
+    restart: unless-stopped
     ports:
-      - '80:80/tcp'
+      - 1883:1883
     volumes:
-      - ./mainsail-config.json:/usr/share/nginx/html/config.json:ro
-    depends_on:
-      - printer
+      - ./docker-data/mosquitto/data:/mosquitto/data
+      - ./docker-data/mosquitto/log:/mosquitto/log
+    networks:
+      default:
+        aliases:
+          - broker

@@ -5,7 +5,7 @@
 
 This project provides a Docker container that simulates a Klipper 3D printer,
 allowing you to test and develop Klipper Components without needing a physical
-printer. It also includes Moonraker, a dummy webcam, and a pre-configured
+printer. It also includes OctoPrint, a dummy webcam, and a pre-configured
 Klipper instance.
 
 ---
@@ -24,6 +24,9 @@ yourself using the provided Dockerfile.
 The recommended way to set up the Virtual-Klipper-Printer is to use the
 pre-built Docker image available on GitHub Container Registry. This method is
 simpler and faster, as it does not require building the image yourself.
+
+If you want the OctoPrint-based setup in this repository, build from the local
+Dockerfile instead of using the published image.
 
 1. Clone this repository
 2. Open a terminal in the cloned folder
@@ -52,6 +55,11 @@ To configure a dummy-webcam, use the following URLs:
    * Stream: `http://localhost:8110/?action=stream`
    * Snapshot: `http://localhost:8110/?action=snapshot`
 
+## Access OctoPrint
+Open OctoPrint at `http://localhost:5000`.
+During setup, use `/home/printer/printer_data/comms/klippy.serial` as the
+printer serial port.
+
 ---
 
 ## Common Docker commands
@@ -75,7 +83,7 @@ Inside the Docker container multiple services are started and controlled via sup
 - `klipper_klippy`: This is the main Klipper service that runs the Klipper firmware and handles communication with the printer.
 - `klipper_mcu`: This service simulates the microcontroller unit (MCU).
 - `printer_simulator`: This service simulates the printer hardware, providing fake responses to Klipper's commands.
-- `moonraker`: This is the Moonraker service that provides a web API for Klipper and handles communication with the frontend.
+- `octoprint`: This is the OctoPrint service that provides the web UI and sends gcode over Klippy's serial PTY.
 - `webcamd`: This service simulates a webcam stream for Klipper.
 
 The klipper_mcu is supposed to be running on a dedicated Microcontroller or SoC. The Klipper MCU code is compiled with Build-Target "Linux".  
@@ -86,8 +94,7 @@ From the current system state an Image Stream is derived
 
 ```mermaid
 graph TD 
-  MAINSAIL[mainsail]
-  MOONRAKER[moonraker]
+   OCTOPRINT[octoprint]
   KLIPPY[klipper_klippy]
   MCU[klipper_mcu]
   SIM[printer_simulator]
@@ -95,9 +102,10 @@ graph TD
   RENDER[printer_renderer]
   IMG[(image0.jpg)]
   CAM[webcamd]
-  MAINSAIL --http://localhost:7125--> MOONRAKER 
-  MAINSAIL --http://localhost:8110--> CAM
-  MOONRAKER --unix://~/printer_data/comms/klippy.sock--> KLIPPY
+   USER[browser]
+   USER --http://localhost:5000--> OCTOPRINT
+   USER --http://localhost:8110--> CAM
+   OCTOPRINT --pty://~/printer_data/comms/klippy.serial--> KLIPPY
   KLIPPY --unix:///tmp/klipper_host_mcu--> MCU
   MCU --via hardware_bridge_hook.so unix:///tmp/printer_hook.sock--> SIM
   SIM --file write--> STATE
