@@ -1,8 +1,11 @@
 import matplotlib
 
 matplotlib.use("Agg")
+from typing import cast
+
 import matplotlib.pyplot as plt
 import numpy as np
+from mpl_toolkits.mplot3d.axes3d import Axes3D
 
 from .axis import Axis
 
@@ -24,14 +27,14 @@ class PrinterRenderer:
         self.y_axis = y_axis
         self.z_axis = z_axis
 
-    def render(self):
+    def render(self) -> None:
         """
         Renders a simple 3D visualization of the printer and nozzle position
         using matplotlib for 3D rendering.
         """
 
         fig = plt.figure(figsize=(self.width / 100, self.height / 100))
-        ax = fig.add_subplot(111, projection="3d")
+        ax = cast(Axes3D, fig.add_subplot(111, projection="3d"))
         # Draw printer frame as a wireframe cube
         frame_min = [self.x_axis.min_pos, self.y_axis.min_pos, self.z_axis.min_pos]
         frame_max = [self.x_axis.max_pos, self.y_axis.max_pos, self.z_axis.max_pos]

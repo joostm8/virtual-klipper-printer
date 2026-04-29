@@ -7,11 +7,16 @@ services:
     ports:
       - "7125:7125"
       - "8110:8080"
-    networks:
-      - dev_net
     tmpfs:
       - /tmp:noexec
       - /home/printer/printer_data/comms:noexec
-networks:
-  dev_net:
-    driver: bridge
+    
+  mainsail:
+    image: ghcr.io/mainsail-crew/mainsail:latest
+    restart: always
+    ports:
+      - '80:80/tcp'
+    volumes:
+      - ./mainsail-config.json:/usr/share/nginx/html/config.json:ro
+    depends_on:
+      - printer
