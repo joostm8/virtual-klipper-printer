@@ -8,6 +8,30 @@ allowing you to test and develop Klipper Components without needing a physical
 printer. It also includes OctoPrint, a dummy webcam, and a pre-configured
 Klipper instance.
 
+This branch replaces Moonraker (and Mainsail) with OctoPrint.
+
+I forked this to fix some errors I encountered and to add some things for the workshop:
+
+* In extruder configs, set min extrude temperatur to 0. Was getting some errors otherwise.
+* In `linux.config` set `CONFIG_CLOCK_FREQ=8000000` instead of `CONFIG_CLOCK_FREQ=50000000`. Was also getting errors otherwise, seems like this has alleviated that problem.
+* Replaced Moonraker (and Mainsail) with OctoPrint.
+
+However: the OctoPrint MQTT plugin relies on [events in OctoPrint](https://docs.octoprint.org/en/main/events/index.html), so far I was using command M154 to set up automated PositionUpdate events, but klipper doesn't support it (https://www.klipper3d.org/G-Codes.html), so I'm not quite sure how I can get the position out of the klipper printer. M114 is supported, but that means I'd have to continuously send that over? Could maybe also be inserted it in the generated gcode, then you'd get a position update after every mode? Anyway, feels a bit hacky, I might figure that out if I have some more time, but doesn't really feel necessary.
+
+## Setup for workshop
+
+Build the docker image:
+
+      docker compose -f docker-compose.build.yml -f docker-compose.yml build
+
+(Optional) To quickly after building:
+
+      docker compose -f docker-compose.build.yml -f docker-compose.yml up -d
+
+The in OctoPrint itself, set up the serial connection to the klippy host: https://www.klipper3d.org/OctoPrint.html
+
+Note: I've found that `~/printer_data/comms/klippy.serial` as specified in that guide doesn't resolve correctly. Writing the absolute path does: `/home/printer/printer_data/comms/klippy.serial`
+
 ---
 
 ## Setup Instructions
