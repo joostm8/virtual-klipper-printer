@@ -1,6 +1,6 @@
 services:
   printer:
-    image: ghcr.io/mainsail-crew/virtual-klipper-printer:latest
+    image: virtual-klipper-printer-moonraker:local
     container_name: printer
     volumes:
       - ./printer_data:/home/printer/printer_data:delegated,Z
@@ -10,13 +10,3 @@ services:
     tmpfs:
       - /tmp:noexec
       - /home/printer/printer_data/comms:noexec
-    
-  mainsail:
-    image: ghcr.io/mainsail-crew/mainsail:latest
-    restart: always
-    ports:
-      - '80:80/tcp'
-    volumes:
-      - ./mainsail-config.json:/usr/share/nginx/html/config.json:ro
-    depends_on:
-      - printer

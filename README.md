@@ -8,6 +8,23 @@ allowing you to test and develop Klipper Components without needing a physical
 printer. It also includes Moonraker, a dummy webcam, and a pre-configured
 Klipper instance.
 
+I forked this to fix some errors I encountered and to add some things for the workshop:
+
+* In extruder configs, set min extrude temperatur to 0. Was getting some errors otherwise.
+* In `linux.config` set `CONFIG_CLOCK_FREQ=8000000` instead of `CONFIG_CLOCK_FREQ=50000000`. Was also getting errors otherwise, seems like this has alleviated that problem.
+* Added the `[mqtt]` section to `moonraker.conf` in the example-configs for easier setup later.
+* Added compose file for Mainsail to quickly test if things are working.
+
+## Setup for workshop
+
+Build the docker image:
+
+      docker compose -f docker-compose.build.yml -f docker-compose.yml build
+
+(Optional) To quickly test the with mainsail after building:
+
+      docker compose -f docker-compose.build.yml -f docker-compose.yml -f docker-compose.mainsail.yml up -d
+
 ---
 
 ## Setup Instructions
