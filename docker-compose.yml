@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
       args:
         KLIPPER_REPO: ${KLIPPER_REPO:-https://github.com/Klipper3d/klipper.git}
-    image: virtual-klipper-printer-octoprint:local
+    image: ghcr.io/joostm8/virtual-klipper-octoprint:latest
     container_name: printer
     volumes:
       - ./printer_data:/home/printer/printer_data:delegated,Z
