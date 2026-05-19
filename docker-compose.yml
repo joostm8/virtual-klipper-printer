@@ -1,6 +1,6 @@
 services:
   printer:
-    image: virtual-klipper-printer-moonraker:local
+    image: ghcr.io/joostm8/virtual-klipper-moonraker:latest
     container_name: printer
     volumes:
       - ./printer_data:/home/printer/printer_data:delegated,Z
